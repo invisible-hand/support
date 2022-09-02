@@ -1,3 +1,4 @@
+const path = require("path")
 const express = require("express")
 const dotenv = require("dotenv").config()
 const {errorHandler} = require('./middleware/errorMiddleware')
@@ -20,6 +21,17 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/users", require("./routes/userRoutes"))
 app.use("/api/tickets", require("./routes/ticketRoutes"))
+
+// Serve frontend
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../frontend/build")))
+    app.get("*", (req, res) => res.sendFile(__dirname, "../", "frontent", "build", "index.html"))
+
+} else {
+    app.get("/", (req, res) => {
+        res.send("hello")
+    })
+}
 
 app.use(errorHandler)
 
